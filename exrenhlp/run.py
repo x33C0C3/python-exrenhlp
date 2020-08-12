@@ -28,8 +28,8 @@ def run(callback, items=None, location=None, *, browser=None):
     elif None is location:
         location = pathlib.Path.cwd()
     location = pathlib.Path(location)
-    if any(
-            location.joinpath(item).resolve().parent != location
+    if not all(
+            location.samefile(location.joinpath(item).resolve().parent)
             for item in items):
         raise ValueError
     items = tuple(map(pathlib.PurePath, items))
