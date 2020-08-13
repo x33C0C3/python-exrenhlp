@@ -23,13 +23,16 @@ def run(callback, items=None, location=None, *, browser=None):
     if None is items and None is location:
         if None is browser:
             browser = Browser.get()
-        location =pathlib.WindowsPath(browser.location())
+        location = browser.location()
+        if not location:
+            raise ValueError
+        location = pathlib.WindowsPath(location)
         items = tuple(browser.selected_items())
-    elif None is location:
+    elif location:
         location = pathlib.Path.cwd()
     location = pathlib.Path(location)
-    if any(
-            location.joinpath(item).resolve().parent != location
+    if not all(
+            location.samefile(location.joinpath(item).resolve().parent)
             for item in items):
         raise ValueError
     items = tuple(map(pathlib.PurePath, items))
@@ -61,6 +64,7 @@ def run(callback, items=None, location=None, *, browser=None):
         if None is not browser:
             browser._webbrowser_.Refresh()
     return None
+
 
 def run_error_safe(*args, **kwds):
     try:

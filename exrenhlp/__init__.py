@@ -47,8 +47,14 @@ class Browser(object):
             wnd_obj = wnd_tab[hwnd]
         return cls(wnd_obj)
 
+    def location_url(self):
+        return self._webbrowser_.LocationURL or None
+
     def location(self):
-        return file_uri_to_path(self._webbrowser_.LocationURL)
+        url = self.location_url()
+        if not url:
+            return None
+        return file_uri_to_path(url)
 
     def selected_items(self):
         yield from (item.Name
